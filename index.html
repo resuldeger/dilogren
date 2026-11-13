@@ -209,6 +209,8 @@ function pickVoice(prefs){for(const p of prefs){const v=voices.find(v=>v.lang.to
 // Önce hazır MP3 (doğal ses), yoksa tarayıcı sesi
 const AU=new Audio();AU.preload="auto";let AIDX={};
 function loadAudioIdx(){if(!st.lang)return;fetch(`audio/${st.lang}/index.json`).then(r=>r.json()).then(j=>AIDX=j).catch(()=>AIDX={})}
+function vgSel(){return `<div class="row"><span class="mute">Ses:</span>${[["f","👩 Kadın"],["m","👨 Erkek"]].map(([k,t])=>`<button class="btn ${(st.vg||"f")===k?"pri":""}" onclick="setVg('${k}',this)">${t}</button>`).join("")}</div>`}
+function setVg(k,b){st.vg=k;save();b.parentNode.querySelectorAll(".btn").forEach(x=>x.classList.toggle("pri",x===b));play(L().alphabet[0][3])}
 function stopAll(){speechSynthesis.cancel();AU.onended=AU.onerror=null;AU.pause()}
 function ttsSay(text,lang,rate){
   return new Promise(res=>{
@@ -224,7 +226,7 @@ function say(text,lang="target",rate){
   return new Promise(res=>{
     let done=false;const fin=()=>{if(!done){done=true;res()}};
     AU.onended=fin;AU.onerror=()=>{if(!done){done=true;ttsSay(text,lang,rate).then(res)}};
-    AU.src=`audio/${st.lang}/${f}`;
+    AU.src=`audio/${st.lang}${st.vg==="m"?"-m":""}/${f}`;
     AU.playbackRate=lang==="tr"?1:(st.rate||0.85)/0.85;
     AU.play().catch(()=>AU.onerror&&AU.onerror());
   })}
@@ -252,7 +254,7 @@ addEventListener("resize",setHH);
 
 const R={};
 R.pick=()=>{
-  $("#app").innerHTML=`<div class="card"><h2>Hangi dili öğreneceksin?</h2><p class="mute">Ana dilin: Türkçe 🇹🇷</p>
+  $("#app").innerHTML=`<div class="card"><h2>Hangi dili öğreneceksin?</h2><p class="mute">Ana dilin: Türkçe 🇹🇷</p>${st.lang?vgSel()+"<br>":""}
   <div class="grid">${Object.entries(LANGS).map(([k,l])=>`<div class="tile" onclick="pickLang('${k}')"><b>${l.flag}</b>${l.name}</div>`).join("")}
   ${COMING.map(([f,n])=>`<div class="tile" style="opacity:.4"><b>${f}</b>${n}<br><span class="chip">yakında</span></div>`).join("")}</div></div>
   <div class="card"><h3>Yol haritası</h3><ol><li><b>Alfabe</b> — her harf bir kere, ses + örnek kelime + mini test</li>
@@ -373,7 +375,7 @@ function buildQueue(kind){const q=[],l=L();
   if(kind==="verbs"||kind==="all")l.verbs.forEach(v=>TENSES.forEach(([t])=>conj(l,v,t).forEach(r=>q.push({tr:r.tr,bs:r.bs,show:r.bs}))));
   return st.shuffle?shuffle(q):q}
 R.listen=()=>{
-  $("#app").innerHTML=`<div class="card"><h3>🎧 Kulaktan öğren</h3><p class="mute">Türkçe → Boşnakça → (sen tekrar et) → Boşnakça. Kulaklık tak, telefonu cebe koy.</p>
+  $("#app").innerHTML=`<div class="card"><h3>🎧 Kulaktan öğren</h3>${vgSel()}<br><p class="mute">Türkçe → Boşnakça → (sen tekrar et) → Boşnakça. Kulaklık tak, telefonu cebe koy.</p>
   <div class="row"><select id="lk"><option value="verbs">Fiiller (tüm zamirler, 4 zaman)</option><option value="vocab">Temel kelimeler (soru, zamir, zaman…)</option><option value="read">Okuma kelimeleri</option><option value="alpha">Alfabe kelimeleri</option><option value="all">Hepsi</option></select>
   <label><input type="checkbox" id="lsh" ${st.shuffle?"checked":""} onchange="st.shuffle=this.checked;save()"> Karışık</label>
   <label>Hız <input type="range" min="0.5" max="1.2" step="0.05" value="${st.rate||0.85}" oninput="st.rate=+this.value;save()"></label></div></div>
