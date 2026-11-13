@@ -206,7 +206,11 @@ function esc(s){return s.replace(/'/g,"\\'")}
 let voices=[];function loadV(){voices=speechSynthesis.getVoices()}
 loadV();speechSynthesis.onvoiceschanged=loadV;
 function pickVoice(prefs){for(const p of prefs){const v=voices.find(v=>v.lang.toLowerCase().startsWith(p));if(v)return v}return null}
-function say(text,lang="target",rate){
+// Önce hazır MP3 (doğal ses), yoksa tarayıcı sesi
+const AU=new Audio();AU.preload="auto";let AIDX={};
+function loadAudioIdx(){if(!st.lang)return;fetch(`audio/${st.lang}/index.json`).then(r=>r.json()).then(j=>AIDX=j).catch(()=>AIDX={})}
+function stopAll(){speechSynthesis.cancel();AU.onended=AU.onerror=null;AU.pause()}
+function ttsSay(text,lang,rate){
   return new Promise(res=>{
     const u=new SpeechSynthesisUtterance(text);
     const v=lang==="tr"?pickVoice(["tr"]):pickVoice(L().voice);
@@ -214,7 +218,17 @@ function say(text,lang="target",rate){
     u.rate=rate||(lang==="tr"?1:(st.rate||0.85));
     u.onend=u.onerror=()=>res();speechSynthesis.speak(u);
   })}
-function play(t){speechSynthesis.cancel();say(t)}
+function say(text,lang="target",rate){
+  const f=(AIDX[lang==="tr"?"tr":st.lang]||{})[text];
+  if(!f)return ttsSay(text,lang,rate);
+  return new Promise(res=>{
+    let done=false;const fin=()=>{if(!done){done=true;res()}};
+    AU.onended=fin;AU.onerror=()=>{if(!done){done=true;ttsSay(text,lang,rate).then(res)}};
+    AU.src=`audio/${st.lang}/${f}`;
+    AU.playbackRate=lang==="tr"?1:(st.rate||0.85)/0.85;
+    AU.play().catch(()=>AU.onerror&&AU.onerror());
+  })}
+function play(t){stopAll();say(t)}
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
 /* ====================== EKRANLAR ====================== */
@@ -231,7 +245,7 @@ function nav(){
 function done(k){return st.prog?.[st.lang]?.[k]}
 function mark(k){st.prog=st.prog||{};st.prog[st.lang]=st.prog[st.lang]||{};st.prog[st.lang][k]=true;save()}
 let qT=0;function nextQ(f,ms){clearTimeout(qT);qT=setTimeout(f,ms)}
-function quitQuiz(k){clearTimeout(qT);aq=[];rq=[];speechSynthesis.cancel();if(k==="alpha")ai=0;go(k)}
+function quitQuiz(k){clearTimeout(qT);aq=[];rq=[];stopAll();if(k==="alpha")ai=0;go(k)}
 function go(k){clearTimeout(qT);if(st.lang&&ai>=L().alphabet.length)ai=0;aq=[];rq=[];st.screen=k;save();nav();setHH();$("#app").innerHTML="";R[k]();scrollTo(0,0)}
 function setHH(){document.documentElement.style.setProperty("--hh",document.querySelector("header").offsetHeight+"px")}
 addEventListener("resize",setHH);
@@ -244,7 +258,7 @@ R.pick=()=>{
   <div class="card"><h3>Yol haritası</h3><ol><li><b>Alfabe</b> — her harf bir kere, ses + örnek kelime + mini test</li>
   <li><b>Okuma</b> — kurallar, sonra kolaydan zora kelime ve cümleler</li><li><b>Fiiller</b> — istiyorum / yapıyorum / geliyorum / gidiyorum… tüm zamirlerle, 4 zamanda</li>
   <li><b>Dinle</b> — ekran kapalıyken/arka planda kulaktan tekrar</li></ol></div>`};
-function pickLang(k){st.lang=k;save();go(done("alpha")?"verbs":"alpha")}
+function pickLang(k){st.lang=k;save();loadAudioIdx();go(done("alpha")?"verbs":"alpha")}
 
 /* --- ALFABE --- */
 let ai=0;
@@ -268,7 +282,7 @@ R.alpha=()=>{
   $("#at"+ai)?.classList.add("cur");
   sayLetter()};
 function A_LEN(){return L().alphabet.length}
-async function sayLetter(){const[,name,,word]=L().alphabet[ai];speechSynthesis.cancel();await say(name);await wait(300);await say(word)}
+async function sayLetter(){const[,name,,word]=L().alphabet[ai];stopAll();await say(name);await wait(300);await say(word)}
 let aq=[];
 function alphaQuiz(){
   if(!aq.length)aq=shuffle(L().alphabet.filter(a=>a[2].length>1)).slice(0,8).map(a=>({a,ok:null}));
@@ -319,7 +333,7 @@ R.vocab=()=>{const C=L().vocab,c=C[vci];
   <table>${c.w.map(([tr,bs],i)=>`<tr id="vw${i}"><td><div class="bs">${hl(bs)}</div><div class="ph">${tr} · “${phon(bs)}”</div></td>
   <td style="width:60px"><button class="btn" onclick="play('${esc(bs)}')">🔊</button></td></tr>`).join("")}</table></div>
   <div class="row" style="justify-content:flex-end"><button class="btn" onclick="vocabQuiz()">🎯 Test</button></div>`};
-async function playVocab(){speechSynthesis.cancel();const w=L().vocab[vci].w;
+async function playVocab(){stopAll();const w=L().vocab[vci].w;
   for(let i=0;i<w.length;i++){const r=$("#vw"+i);if(!r||st.screen!=="vocab")return;r.style.background="var(--line)";await say(w[i][0],"tr");await wait(250);await say(w[i][1]);await wait(500);r.style.background=""}}
 function vocabQuiz(){const W=L().vocab[vci].w,a=W[Math.floor(Math.random()*W.length)];
   const opts=shuffle([a,...shuffle(W.filter(x=>x!==a)).slice(0,3)]);
@@ -340,7 +354,7 @@ R.verbs=()=>{
   <td style="width:60px"><button class="btn" onclick="play('${esc(r.bs)}')">🔊</button></td></tr>`).join("")}</table>
   <p class="mute">Mavi = ek. Boşnakçada zamir çoğu zaman düşer: “${rows[0].bs.split(" ").slice(1).join(" ")}” de yeterli.</p></div>
   <div class="row" style="justify-content:flex-end"><button class="btn" onclick="verbQuiz()">🎯 Test et</button></div>`};
-async function playTable(){speechSynthesis.cancel();const rows=conj(L(),L().verbs[vi],tn);
+async function playTable(){stopAll();const rows=conj(L(),L().verbs[vi],tn);
   for(let i=0;i<6;i++){const tr=$("#vr"+i);if(!tr)return;tr.style.background="var(--line)";await say(rows[i].tr,"tr");await wait(250);await say(rows[i].bs);await wait(400);tr.style.background=""}}
 function verbQuiz(){
   const V=L().verbs,v=V[Math.floor(Math.random()*V.length)],t=TENSES[Math.floor(Math.random()*4)][0];
@@ -371,7 +385,7 @@ function silentWav(){const n=8000,b=new ArrayBuffer(44+n*2),d=new DataView(b),w=
   w(0,"RIFF");d.setUint32(4,36+n*2,true);w(8,"WAVEfmt ");d.setUint32(16,16,true);d.setUint16(20,1,true);d.setUint16(22,1,true);d.setUint32(24,8000,true);d.setUint32(28,16000,true);d.setUint16(32,2,true);d.setUint16(34,16,true);w(36,"data");d.setUint32(40,n*2,true);
   return URL.createObjectURL(new Blob([b],{type:"audio/wav"}))}
 async function lToggle(){
-  if(lRun){lRun=false;speechSynthesis.cancel();$("#silence").pause();$("#lbtn").textContent="▶︎ Devam";wake?.release?.();return}
+  if(lRun){lRun=false;stopAll();$("#silence").pause();$("#lbtn").textContent="▶︎ Devam";wake?.release?.();return}
   if(!lQ.length||$("#lk")?.dataset.k!==$("#lk").value){lQ=buildQueue($("#lk").value);lI=0;$("#lk").dataset.k=$("#lk").value}
   lRun=true;$("#lbtn").textContent="⏸ Durdur";
   const s=$("#silence");if(!s.src)s.src=silentWav();s.play().catch(()=>{});
@@ -389,11 +403,11 @@ async function lLoop(){const tok=++lTok;
     await say(it.bs);await wait(1800); // sen tekrar et
     if(!lRun||tok!==lTok)break;await say(it.bs);await wait(1000);
     if(tok===lTok)lI=(lI+1)%lQ.length}}
-function lStep(d){if(!lQ.length)return;lI=(lI+d+lQ.length)%lQ.length;speechSynthesis.cancel();lShow();if(lRun)lLoop()}
+function lStep(d){if(!lQ.length)return;lI=(lI+d+lQ.length)%lQ.length;stopAll();lShow();if(lRun)lLoop()}
 
 /* ====================== BAŞLAT ====================== */
 if(!st.lang)st.screen="pick";
-nav();setHH();R[st.screen||"pick"]();
+loadAudioIdx();nav();setHH();R[st.screen||"pick"]();
 if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
