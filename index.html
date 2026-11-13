@@ -20,7 +20,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-app
 header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:8px;align-items:center;z-index:5;flex-wrap:wrap}
 header h1{font-size:18px;margin:0 auto 0 0}
 nav{display:flex;gap:6px;flex-wrap:wrap}
-@media (max-width:520px){header h1{font-size:16px;width:100%}nav button{padding:6px 9px;font-size:14px}}
+@media (max-width:520px){header{flex-wrap:nowrap;padding-left:8px;padding-right:8px}header h1{display:none}nav{flex-wrap:nowrap;width:100%;gap:4px}nav button{flex:1 1 0;min-width:0;padding:5px 0;font-size:11px;display:flex;flex-direction:column;align-items:center;line-height:1.2;white-space:nowrap}nav button .ic{font-size:18px}}
 nav button,.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;cursor:pointer}
 nav button.on,.btn.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
 nav button:disabled{opacity:.4;cursor:not-allowed}
@@ -117,6 +117,17 @@ const LANGS = {
    {title:"5. Dž Đ Lj Nj",words:[["džamija","cami","🕌"],["đak","öğrenci","🎒"],["ljubav","sevgi","❤️"],["konj","at","🐴"],["prijatelj","arkadaş","🤝"],["knjiga","kitap","📖"],["džep","cep","👖"],["ljudi","insanlar","👥"]]},
    {title:"6. İlk cümleler",words:[["Dobro jutro!","Günaydın!","🌅"],["Dobar dan!","İyi günler!","☀️"],["Hvala.","Teşekkürler.","🙏"],["Kako si?","Nasılsın?","🙂"],["Ja sam dobro.","Ben iyiyim.","👍"],["Ne razumijem.","Anlamıyorum.","🤷"],["Govorite li turski?","Türkçe konuşuyor musunuz?","🇹🇷"],["Laku noć!","İyi geceler!","🌙"]]}
   ],
+  vocab:[
+   {t:"👤 Kişiler",n:"“Vi” tek kişiye kibarca “siz” demek için de kullanılır. Onlar: erkekler/karma grup oni, kadınlar one, nötr ona.",w:[["Ben","Ja"],["Sen","Ti"],["O (erkek)","On"],["O (kadın)","Ona"],["O (nötr)","Ono"],["Biz","Mi"],["Siz","Vi"],["Onlar","Oni / One / Ona"]]},
+   {t:"❓ Soru kelimeleri",w:[["Ne?","Šta?"],["Kim?","Ko?"],["Kimin?","Čiji?"],["Kime?","Kome?"],["Kimi?","Koga?"],["Nerede?","Gdje?"],["Nereye?","Kuda?"],["Nereden?","Odakle?"],["Ne zaman?","Kada?"],["Neden?","Zašto?"],["Nasıl?","Kako?"],["Ne kadar / Kaç?","Koliko?"],["Hangisi?","Koji?"],["Nasıl bir?","Kakav?"],["Kaç para?","Koliko košta?"],["Saat kaç?","Koliko je sati?"]]},
+   {t:"🫵 Benim, senin…",n:"Sonları, yanındaki ismin cinsiyetine ve sayısına göre değişir.",w:[["Benim","Moj / Moja / Moje"],["Senin","Tvoj / Tvoja / Tvoje"],["Onun (erkeğin)","Njegov"],["Onun (kadının)","Njen"],["Bizim","Naš / Naša / Naše"],["Sizin","Vaš / Vaša / Vaše"],["Onların","Njihov"]]},
+   {t:"📍 Bu, şu, yer",w:[["Bu (e / k / n)","Ovaj / Ova / Ovo"],["Şu (e / k / n)","Taj / Ta / To"],["O, uzaktaki","Onaj / Ona / Ono"],["Burada","Ovdje"],["Şurada / Orada","Tu"],["Orada, ileride","Tamo"],["Buraya","Ovamo"],["Oraya","Tamo"],["İçeride","Unutra"],["Dışarıda","Vani"],["Yukarıda","Gore"],["Aşağıda","Dolje"],["Sağda","Desno"],["Solda","Lijevo"],["Düz / Dümdüz","Pravo"],["Yakın","Blizu"],["Uzak","Daleko"],["Önünde","Ispred"],["Arkasında","Iza"],["Yanında","Pored"],["Arasında","Između"],["Karşısında","Nasuprot"]]},
+   {t:"⏰ Zaman",n:"Ć, Türkçedeki ç'den daha yumuşaktır.",w:[["Şimdi","Sada"],["Sonra","Poslije"],["Önce","Prije"],["Bugün","Danas"],["Yarın","Sutra"],["Dün","Jučer"],["Bu akşam","Večeras"],["Bu gece","Noćas"],["Sabah","Jutro"],["Akşam","Večer"],["Gece","Noć"],["Hemen","Odmah"],["Henüz / Daha","Još"],["Artık / Çoktan","Već"],["Her zaman","Uvijek"],["Bazen","Ponekad"],["Asla","Nikad"],["Sık sık","Često"],["Erken","Rano"],["Geç","Kasno"]]},
+   {t:"⚖️ Miktar",w:[["Çok","Puno"],["Az / Biraz","Malo"],["Daha fazla","Više"],["Daha az","Manje"],["Yeterli","Dovoljno"],["Gereğinden çok","Previše"],["Hepsi / Her şey","Sve"],["Herkes","Svi"],["Her / Her biri","Svaki"],["Bir şey","Nešto"],["Hiçbir şey","Ništa"],["Biri / Birisi","Neko"],["Hiç kimse","Niko"],["Başka","Drugi"],["Aynı","Isti"],["Sadece","Samo"],["Yaklaşık","Otprilike"],["Yarım","Pola"],["Kaç tane?","Koliko komada?"]]},
+   {t:"🔗 Bağlaçlar ve temel",w:[["Evet","Da"],["Hayır","Ne"],["Ve","I"],["Veya","Ili"],["Ama","Ali"],["Çünkü","Zato što"],["Eğer","Ako"],["İçin","Za"],["İle / Birlikte","Sa"],["Olmadan / …siz","Bez"],["İçinde / …de","U"],["Üstünde / …de","Na"],["Belki","Možda"],["Tabii","Naravno"],["Tamam / İyi","Dobro"],["Olur / Mümkün","Može"],["Olmaz","Ne može"],["Var","Ima"],["Yok","Nema"]]},
+   {t:"🙋 Ben… (fiiller)",w:[["İstiyorum","Želim"],["İstemiyorum","Ne želim"],["Biliyorum","Znam"],["Bilmiyorum","Ne znam"],["Anlıyorum","Razumijem"],["Anlamıyorum","Ne razumijem"],["Konuşuyorum","Govorim"],["Gidiyorum","Idem"],["Geliyorum","Dolazim"],["Bende var","Imam"],["Bende yok","Nemam"],["Yapabilirim","Mogu"],["Yapamam","Ne mogu"],["Arıyorum","Tražim"]]},
+   {t:"💬 Birleştir",w:[["Bu ne?","Šta je ovo?"],["Bu kim?","Ko je ovo?"],["Sen neredesin?","Gdje si?"],["Ben buradayım.","Ja sam ovdje."],["Nereye gidiyorsun?","Kuda ideš?"],["Bu ne kadar?","Koliko ovo košta?"],["Tuvalet nerede?","Gdje je toalet?"],["Bu benim.","Ovo je moje."]]}
+  ],
   aux:{past:["sam","si","je","smo","ste","su"],fut:["ću","ćeš","će","ćemo","ćete","će"]},
   verbs:[
    {bs:"željeti",tr:"istemek",e:"🤲",pres:["želim","želiš","želi","želimo","želite","žele"],pp:["želio","željela","željeli"],
@@ -207,11 +218,11 @@ function play(t){speechSynthesis.cancel();say(t)}
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
 /* ====================== EKRANLAR ====================== */
-const SCREENS={pick:"🌍 Dil",alpha:"🔤 Alfabe",read:"📖 Okuma",verbs:"🔁 Fiiller",listen:"🎧 Dinle"};
+const SCREENS={pick:"🌍 Dil",alpha:"🔤 Alfabe",read:"📖 Okuma",vocab:"📚 Kelime",verbs:"🔁 Fiiller",listen:"🎧 Dinle"};
 function nav(){
   const n=$("#nav");n.innerHTML="";
   for(const[k,t]of Object.entries(SCREENS)){
-    const b=document.createElement("button");b.textContent=t;
+    const b=document.createElement("button");const[ic,...tx]=t.split(" ");b.innerHTML=`<span class="ic">${ic}</span> ${tx.join(" ")}`;
     b.className=st.screen===k?"on":"";
     b.disabled=!st.lang&&k!=="pick";
     b.onclick=()=>go(k);n.appendChild(b)}
@@ -219,7 +230,9 @@ function nav(){
 }
 function done(k){return st.prog?.[st.lang]?.[k]}
 function mark(k){st.prog=st.prog||{};st.prog[st.lang]=st.prog[st.lang]||{};st.prog[st.lang][k]=true;save()}
-function go(k){st.screen=k;save();nav();setHH();$("#app").innerHTML="";R[k]();scrollTo(0,0)}
+let qT=0;function nextQ(f,ms){clearTimeout(qT);qT=setTimeout(f,ms)}
+function quitQuiz(k){clearTimeout(qT);aq=[];rq=[];speechSynthesis.cancel();if(k==="alpha")ai=0;go(k)}
+function go(k){clearTimeout(qT);if(st.lang&&ai>=L().alphabet.length)ai=0;aq=[];rq=[];st.screen=k;save();nav();setHH();$("#app").innerHTML="";R[k]();scrollTo(0,0)}
 function setHH(){document.documentElement.style.setProperty("--hh",document.querySelector("header").offsetHeight+"px")}
 addEventListener("resize",setHH);
 
@@ -266,10 +279,10 @@ function alphaQuiz(){
     ${s>=6?`<button class="btn pri" onclick="go('read')">Okumaya geç →</button>`:`<button class="btn pri" onclick="aq=[];ai=0;R.alpha()">Alfabeyi tekrar et</button>`}
     <button class="btn" onclick="aq=[];alphaQuiz()">Testi tekrarla</button></div>`;nav();return}
   const opts=shuffle([q.a,...shuffle(L().alphabet.filter(x=>x!==q.a&&x[2].length>1)).slice(0,3)]);
-  $("#app").innerHTML=`<div class="card center"><p class="mute">Mini test — bu harf nasıl okunur?</p><div class="big">${q.a[0]}</div>
+  $("#app").innerHTML=`<div class="card center"><div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="mute">🎯 Test</span><button class="btn" onclick="quitQuiz('alpha')">✕ Çık</button></div><p class="mute">Mini test — bu harf nasıl okunur?</p><div class="big">${q.a[0]}</div>
   ${opts.map(o=>`<button class="btn opt" onclick="ansA(this,${o===q.a})">${o[2]}</button>`).join("")}</div>`;
   play(q.a[1])}
-function ansA(b,ok){const q=aq.find(x=>x.ok===null);q.ok=ok;b.classList.add(ok?"ok":"bad");say(q.a[3]);setTimeout(alphaQuiz,1300)}
+function ansA(b,ok){const q=aq.find(x=>x.ok===null);q.ok=ok;b.classList.add(ok?"ok":"bad");say(q.a[3]);nextQ(alphaQuiz,1300)}
 
 /* --- OKUMA --- */
 let ri=0;
@@ -292,10 +305,27 @@ function readQuiz(){
     $("#app").innerHTML=`<div class="card center"><h2>${s} / ${W.length}</h2><button class="btn pri" onclick="R.read()">Derse dön</button></div>`;
     if(ri===L().reading.length-1&&s>=W.length-1)mark("read");nav();return}
   const opts=shuffle([q.w,...shuffle(W.filter(x=>x!==q.w)).slice(0,3)]);
-  $("#app").innerHTML=`<div class="card center"><p class="mute">Dinle — hangisini duydun?</p><button class="btn" style="font-size:32px" onclick="play('${esc(q.w[0])}')">🔊</button>
+  $("#app").innerHTML=`<div class="card center"><div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="mute">🎯 Test</span><button class="btn" onclick="quitQuiz('read')">✕ Çık</button></div><p class="mute">Dinle — hangisini duydun?</p><button class="btn" style="font-size:32px" onclick="play('${esc(q.w[0])}')">🔊</button>
   ${opts.map(o=>`<button class="btn opt bs" onclick="ansR(this,${o===q.w})">${hl(o[0])}</button>`).join("")}</div>`;
   play(q.w[0])}
-function ansR(b,ok){rq.find(x=>x.ok===null).ok=ok;b.classList.add(ok?"ok":"bad");setTimeout(readQuiz,900)}
+function ansR(b,ok){rq.find(x=>x.ok===null).ok=ok;b.classList.add(ok?"ok":"bad");nextQ(readQuiz,900)}
+
+/* --- KELİMELER --- */
+let vci=0;
+R.vocab=()=>{const C=L().vocab,c=C[vci];
+  $("#app").innerHTML=`<div class="row">${C.map((x,i)=>`<button class="btn ${i===vci?"pri":""}" onclick="vci=${i};R.vocab()">${x.t}</button>`).join("")}</div><br>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">${c.t}</h3><button class="btn pri" onclick="playVocab()">▶︎ Hepsini oku</button></div>
+  ${c.n?`<p class="mute">${c.n}</p>`:""}
+  <table>${c.w.map(([tr,bs],i)=>`<tr id="vw${i}"><td><div class="bs">${hl(bs)}</div><div class="ph">${tr} · “${phon(bs)}”</div></td>
+  <td style="width:60px"><button class="btn" onclick="play('${esc(bs)}')">🔊</button></td></tr>`).join("")}</table></div>
+  <div class="row" style="justify-content:flex-end"><button class="btn" onclick="vocabQuiz()">🎯 Test</button></div>`};
+async function playVocab(){speechSynthesis.cancel();const w=L().vocab[vci].w;
+  for(let i=0;i<w.length;i++){const r=$("#vw"+i);if(!r||st.screen!=="vocab")return;r.style.background="var(--line)";await say(w[i][0],"tr");await wait(250);await say(w[i][1]);await wait(500);r.style.background=""}}
+function vocabQuiz(){const W=L().vocab[vci].w,a=W[Math.floor(Math.random()*W.length)];
+  const opts=shuffle([a,...shuffle(W.filter(x=>x!==a)).slice(0,3)]);
+  $("#app").innerHTML=`<div class="card center"><div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="mute">🎯 Test</span><button class="btn" onclick="quitQuiz('vocab')">✕ Çık</button></div>
+  <p class="mute">Boşnakçası hangisi?</p><h2>${a[0]}</h2>
+  ${opts.map(o=>`<button class="btn opt bs" onclick="this.classList.add(${o===a}?'ok':'bad');play('${esc(a[1])}');nextQ(vocabQuiz,1400)">${hl(o[1])}</button>`).join("")}</div>`}
 
 /* --- FİİLLER --- */
 let vi=0,tn="pres";
@@ -316,20 +346,21 @@ function verbQuiz(){
   const V=L().verbs,v=V[Math.floor(Math.random()*V.length)],t=TENSES[Math.floor(Math.random()*4)][0];
   const rows=conj(L(),v,t),i=Math.floor(Math.random()*6),ans=rows[i];
   const opts=shuffle([ans,...shuffle(rows.filter((_,j)=>j!==i&&rows[j].bs!==ans.bs)).slice(0,3)]);
-  $("#app").innerHTML=`<div class="card center"><p class="mute">Boşnakçası hangisi?</p><div class="emoji">${PRON_EMO[i]} ${v.e}</div><h2>${ans.tr}</h2>
-  ${opts.map(o=>`<button class="btn opt bs" onclick="this.classList.add(${o===ans}?'ok':'bad');play('${esc(ans.bs)}');setTimeout(verbQuiz,1400)">${o.bs}</button>`).join("")}
-  <br><button class="btn" onclick="R.verbs()">← Tabloya dön</button></div>`}
+  $("#app").innerHTML=`<div class="card center"><div class="row" style="justify-content:space-between;margin-bottom:8px"><span class="mute">🎯 Test</span><button class="btn" onclick="quitQuiz('verbs')">✕ Çık</button></div><p class="mute">Boşnakçası hangisi?</p><div class="emoji">${PRON_EMO[i]} ${v.e}</div><h2>${ans.tr}</h2>
+  ${opts.map(o=>`<button class="btn opt bs" onclick="this.classList.add(${o===ans}?'ok':'bad');play('${esc(ans.bs)}');nextQ(verbQuiz,1400)">${o.bs}</button>`).join("")}
+  <br><button class="btn" onclick="quitQuiz('verbs')">✕ Testten çık</button></div>`}
 
 /* --- DİNLE (arka plan) --- */
 let lRun=false,lQ=[],lI=0,wake=null;
 function buildQueue(kind){const q=[],l=L();
   if(kind==="alpha"||kind==="all")l.alphabet.forEach(a=>q.push({tr:a[4],bs:a[3],show:a[0]+" — "+a[3]}));
   if(kind==="read"||kind==="all")l.reading.forEach(r=>r.words.forEach(w=>q.push({tr:w[1],bs:w[0],show:w[0]})));
+  if(kind==="vocab"||kind==="all")l.vocab.forEach(c=>c.w.forEach(([tr,bs])=>q.push({tr,bs,show:bs})));
   if(kind==="verbs"||kind==="all")l.verbs.forEach(v=>TENSES.forEach(([t])=>conj(l,v,t).forEach(r=>q.push({tr:r.tr,bs:r.bs,show:r.bs}))));
   return st.shuffle?shuffle(q):q}
 R.listen=()=>{
   $("#app").innerHTML=`<div class="card"><h3>🎧 Kulaktan öğren</h3><p class="mute">Türkçe → Boşnakça → (sen tekrar et) → Boşnakça. Kulaklık tak, telefonu cebe koy.</p>
-  <div class="row"><select id="lk"><option value="verbs">Fiiller (tüm zamirler, 4 zaman)</option><option value="read">Okuma kelimeleri</option><option value="alpha">Alfabe kelimeleri</option><option value="all">Hepsi</option></select>
+  <div class="row"><select id="lk"><option value="verbs">Fiiller (tüm zamirler, 4 zaman)</option><option value="vocab">Temel kelimeler (soru, zamir, zaman…)</option><option value="read">Okuma kelimeleri</option><option value="alpha">Alfabe kelimeleri</option><option value="all">Hepsi</option></select>
   <label><input type="checkbox" id="lsh" ${st.shuffle?"checked":""} onchange="st.shuffle=this.checked;save()"> Karışık</label>
   <label>Hız <input type="range" min="0.5" max="1.2" step="0.05" value="${st.rate||0.85}" oninput="st.rate=+this.value;save()"></label></div></div>
   <div class="card"><div class="now" id="now"><span class="mute">Hazır</span></div><div class="bar"><i id="lbar" style="width:0"></i></div><br>
