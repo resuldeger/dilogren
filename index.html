@@ -20,6 +20,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-app
 header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:8px;align-items:center;z-index:5;flex-wrap:wrap}
 header h1{font-size:18px;margin:0 auto 0 0}
 nav{display:flex;gap:6px;flex-wrap:wrap}
+@media (max-width:520px){header h1{font-size:16px;width:100%}nav button{padding:6px 9px;font-size:14px}}
 nav button,.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;cursor:pointer}
 nav button.on,.btn.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
 nav button:disabled{opacity:.4;cursor:not-allowed}
@@ -27,6 +28,15 @@ main{max-width:860px;margin:0 auto;padding:16px;padding-bottom:calc(16px + env(s
 header{padding-top:calc(10px + env(safe-area-inset-top))}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
 .big{font-size:96px;font-weight:700;text-align:center;line-height:1.1}
+.atop{position:sticky;top:var(--hh,60px);z-index:4;background:var(--bg);padding:8px 0 6px;margin:-16px 0 8px}
+.atop .card{display:flex;gap:14px;align-items:center;padding:12px 14px;margin:6px 0 8px}
+.atop .lt{font-size:52px;font-weight:700;line-height:1;min-width:92px;text-align:center}
+.atop .info{flex:1;min-width:0;font-size:14px}
+.atop .info .bs{font-size:19px}
+.atop .emoji{font-size:34px}
+.tile.cur{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc) inset}
+.agrid{grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}
+.agrid .tile{padding:8px 4px;font-size:12px}
 .center{text-align:center}.mute{color:var(--mute)}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
@@ -203,14 +213,15 @@ function nav(){
   for(const[k,t]of Object.entries(SCREENS)){
     const b=document.createElement("button");b.textContent=t;
     b.className=st.screen===k?"on":"";
-    b.disabled=!st.lang&&k!=="pick"||(k==="read"&&!done("alpha"))||(k==="verbs"&&!done("read"));
-    b.title=b.disabled?"Önce önceki adımı bitir":"";
+    b.disabled=!st.lang&&k!=="pick";
     b.onclick=()=>go(k);n.appendChild(b)}
   $("#langName").textContent=st.lang?"· "+L().flag+" "+L().name:"";
 }
 function done(k){return st.prog?.[st.lang]?.[k]}
 function mark(k){st.prog=st.prog||{};st.prog[st.lang]=st.prog[st.lang]||{};st.prog[st.lang][k]=true;save()}
-function go(k){st.screen=k;save();nav();R[k]();scrollTo(0,0)}
+function go(k){st.screen=k;save();nav();setHH();$("#app").innerHTML="";R[k]();scrollTo(0,0)}
+function setHH(){document.documentElement.style.setProperty("--hh",document.querySelector("header").offsetHeight+"px")}
+addEventListener("resize",setHH);
 
 const R={};
 R.pick=()=>{
@@ -227,17 +238,23 @@ let ai=0;
 R.alpha=()=>{
   const A=L().alphabet;
   if(ai>=A.length)return alphaQuiz();
+  if(!$("#atop")){
+    $("#app").innerHTML=`<div class="atop" id="atop"></div>
+    <div class="card"><p class="mute" style="margin:0 0 8px">Harfe dokun — üstteki kart değişir, liste yerinde kalır.</p><div class="grid agrid">${A.map((a,i)=>`<div class="tile" id="at${i}" onclick="ai=${i};R.alpha()"><b class="${L().special.includes(a[0].toLowerCase())?"sp":""}">${a[0]}</b>${a[2].split(" ")[0]}</div>`).join("")}</div></div>`}
   const[up,name,snd,word,tr,emo]=A[ai];
-  $("#app").innerHTML=`<div class="bar"><i style="width:${ai/A.length*100}%"></i></div><p class="mute center">${ai+1} / ${A.length}${done("alpha")?" · ✅ alfabe tamamlandı":""}</p>
-  <div class="card center"><div class="big">${up} ${up.length>1?up[0]+up[1].toLowerCase():up.toLowerCase()}</div>
-  <p>Adı: <b>${name}</b> · Türkçe sesi: <b>${snd}</b></p>
-  <div class="emoji">${emo}</div><p class="bs">${hl(word)}</p><p class="ph">okunuş: “${phon(word)}” · ${tr}</p>
-  <div class="row" style="justify-content:center"><button class="btn" onclick="sayLetter()">🔊 Dinle</button></div></div>
-  <div class="row" style="justify-content:space-between"><button class="btn" onclick="ai=Math.max(0,ai-1);R.alpha()" ${ai?"":"disabled"}>← Geri</button>
-  ${done("alpha")?`<button class="btn" onclick="go('read')">Okumaya geç →</button>`:""}
-  <button class="btn pri" onclick="ai++;R.alpha()">İleri →</button></div>
-  <div class="card"><div class="grid">${A.map((a,i)=>`<div class="tile" onclick="ai=${i};R.alpha()" style="${i===ai?"border-color:var(--acc)":""}"><b class="${L().special.includes(a[0].toLowerCase())?"sp":""}">${a[0]}</b>${a[2].split(" ")[0]}</div>`).join("")}</div></div>`;
+  $("#atop").innerHTML=`<div class="bar"><i style="width:${(ai+1)/A.length*100}%"></i></div>
+  <div class="card"><div class="lt">${up}${up.length>1?up[0]+up[1].toLowerCase():up.toLowerCase()}</div>
+   <div class="info"><div>Adı <b>${name}</b> · ses: <b>${snd}</b></div>
+   <div><span class="bs">${hl(word)}</span> <span class="ph">“${phon(word)}” · ${tr}</span></div></div>
+   <div class="emoji">${emo}</div></div>
+  <div class="row" style="justify-content:space-between"><button class="btn" onclick="ai=Math.max(0,ai-1);R.alpha()" ${ai?"":"disabled"}>←</button>
+   <button class="btn" onclick="sayLetter()">🔊 ${ai+1}/${A.length}</button>
+   <button class="btn" onclick="aq=[];ai=A_LEN();R.alpha()">🎯 Test</button>
+   <button class="btn pri" onclick="ai++;R.alpha()">→</button></div>`;
+  document.querySelectorAll(".agrid .tile.cur").forEach(t=>t.classList.remove("cur"));
+  $("#at"+ai)?.classList.add("cur");
   sayLetter()};
+function A_LEN(){return L().alphabet.length}
 async function sayLetter(){const[,name,,word]=L().alphabet[ai];speechSynthesis.cancel();await say(name);await wait(300);await say(word)}
 let aq=[];
 function alphaQuiz(){
@@ -345,7 +362,7 @@ function lStep(d){if(!lQ.length)return;lI=(lI+d+lQ.length)%lQ.length;speechSynth
 
 /* ====================== BAŞLAT ====================== */
 if(!st.lang)st.screen="pick";
-nav();R[st.screen||"pick"]();
+nav();setHH();R[st.screen||"pick"]();
 if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
