@@ -329,7 +329,7 @@ function ansR(b,ok){rq.find(x=>x.ok===null).ok=ok;b.classList.add(ok?"ok":"bad")
 /* --- KELİMELER --- */
 let vci=0;
 R.vocab=()=>{const C=L().vocab,c=C[vci];
-  $("#app").innerHTML=`<div class="row">${C.map((x,i)=>`<button class="btn ${i===vci?"pri":""}" onclick="vci=${i};R.vocab()">${x.t}</button>`).join("")}</div><br>
+  $("#app").innerHTML=`${vgSel()}<div class="row">${C.map((x,i)=>`<button class="btn ${i===vci?"pri":""}" onclick="vci=${i};R.vocab()">${x.t}</button>`).join("")}</div><br>
   <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">${c.t}</h3><button class="btn pri" onclick="playVocab()">▶︎ Hepsini oku</button></div>
   ${c.n?`<p class="mute">${c.n}</p>`:""}
   <table>${c.w.map(([tr,bs],i)=>`<tr id="vw${i}"><td><div class="bs">${hl(bs)}</div><div class="ph">${tr} · “${phon(bs)}”</div></td>
@@ -348,7 +348,7 @@ let vi=0,tn="pres";
 R.verbs=()=>{
   const V=L().verbs,v=V[vi],rows=conj(L(),v,tn);
   const bsH=ending(rows.map(r=>r.bs)),trH=ending(rows.map(r=>r.tr));
-  $("#app").innerHTML=`<div class="row">${V.map((x,i)=>`<button class="btn ${i===vi?"pri":""}" onclick="vi=${i};R.verbs()">${x.e} ${x.tr.split(" ")[0]}</button>`).join("")}</div><br>
+  $("#app").innerHTML=`${vgSel()}<div class="row">${V.map((x,i)=>`<button class="btn ${i===vi?"pri":""}" onclick="vi=${i};R.verbs()">${x.e} ${x.tr.split(" ")[0]}</button>`).join("")}</div><br>
   <div class="card"><div class="row" style="justify-content:space-between"><div><span class="emoji">${v.e}</span> <span class="bs" style="font-size:26px">${hl(v.bs)}</span> <span class="mute">= ${v.tr}</span></div>
   <button class="btn pri" onclick="playTable()">▶︎ Hepsini oku</button></div>
   <div class="row" style="margin:10px 0">${TENSES.map(([k,t])=>`<button class="btn ${k===tn?"pri":""}" onclick="tn='${k}';R.verbs()">${t}</button>`).join("")}</div>
